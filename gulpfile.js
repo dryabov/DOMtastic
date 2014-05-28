@@ -34,17 +34,6 @@ var srcDir = path.resolve('src'),
         outSourceMap: true
     };
 
-if (gutil.env.include) {
-    var include_list = ['index', 'api'].concat(gutil.env.include.split(',')),
-        modules_list = fs.readdirSync('./src').map(function (module) {
-            return module.replace('.js', '');
-        }),
-        exclude_list = modules_list.filter(function (module) {
-            return include_list.indexOf(module) < 0;
-        });
-    gutil.env.exclude = exclude_list.join(',');
-}
-
 var bundlePresets = {
     default: {
         modulesToExclude: ['data', 'dom_extra', 'mode', 'selector_extra', 'type'],
@@ -55,11 +44,11 @@ var bundlePresets = {
         dest: path.resolve(releaseFolder, 'bundle/full')
     },
     bare: {
-        modulesToExclude: ['attr', 'data', 'dom_extra', 'html', 'mode', 'selector_extra', 'type'],
+        modulesToExclude: ['attr', 'data', 'dom_extra', 'html', 'mode', 'noconflict', 'selector_extra', 'type'],
         dest: path.resolve(releaseFolder, 'bundle/bare')
     },
     custom: {
-        modulesToExclude: gutil.env.exclude ? gutil.env.exclude.split(',') : [],
+        modulesToExclude: gutil.env.exclude ? gutil.env.exclude.split(',') : gutil.env.include ? getModulesToExclude(gutil.env.include) : [],
         dest: distFolder
     }
 };
@@ -156,6 +145,16 @@ gulp.task('uglify', ['bundle'], function(done) {
 
 // Util
 
+function getModulesToExclude(modulesToIncludeArg) {
+    var modulesToInclude = ['index', 'api', 'util'].concat(modulesToIncludeArg.split(',')),
+        modulesList = fs.readdirSync('./src').map(function (module) {
+            return module.replace('.js', '');
+        });
+    return modulesList.filter(function (module) {
+        return modulesToInclude.indexOf(module) === -1;
+    });
+}
+
 function _uglify(options, done) {
 
     var orchestrator = new Orchestrator(),
@@ -216,7 +215,7 @@ function dollar(data) {
 function exclude(preset) {
     var modulesToExclude = bundlePresets[preset].modulesToExclude,
         removeDeReqsRE = new RegExp('.+_dereq_.+(__M__).+\\n'.replace(/__M__/g, modulesToExclude.join('|')), 'g'),
-        removeExtendsRE = new RegExp('(,\\ (__M__)\\b)'.replace(/__M__/g, modulesToExclude.join('|')), 'g');
+        removeExtendsRE = new RegExp('(,\\ (__M__)\\b)'.replace(/__M__/g, modulesToExclude.join('_?|')), 'g');
     return function(data) {
         return modulesToExclude.length ? data.replace(removeDeReqsRE, '').replace(removeExtendsRE, '') : data;
     }
