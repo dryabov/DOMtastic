@@ -2,7 +2,7 @@
  * @module Selector (extra)
  */
 
-import { each, toArray} from './util';
+import { each, toArray } from './util';
 import { $, matches } from './selector';
 
 /**
@@ -31,26 +31,6 @@ function children(selector) {
 }
 
 /**
- * Return the closest element matching the selector (starting by itself).
- *
- * @param {String} selector Filter
- * @return {Object} New wrapped collection (containing zero or one element)
- * @chainable
- * @example
- *     $('.selector').closest('.container');
- */
-
-function closest(selector) {
-    var node = this[0];
-    for (; node.nodeType !== node.DOCUMENT_NODE; node = node.parentNode) {
-        if (matches(node, selector)) {
-            return $(node);
-        }
-    }
-    return $();
-}
-
-/**
  * Return child nodes of each element in the collection, including text and comment nodes.
  *
  * @return {Object} New wrapped collection
@@ -74,7 +54,7 @@ function contents() {
  * @chainable
  * @example
  *     $('.items').eq(1)
- *     ➤ The second item; result is the same as doing $($('.items')[1]);
+ *     // The second item; result is the same as doing $($('.items')[1]);
  */
 
 function eq(index) {
@@ -88,7 +68,7 @@ function eq(index) {
  * @return {Node} Element at the specified index
  * @example
  *     $('.items').get(1)
- *     ➤ The second element; result is the same as doing $('.items')[1];
+ *     // The second element; result is the same as doing $('.items')[1];
  */
 
 function get(index) {
@@ -117,6 +97,29 @@ function parent(selector) {
 }
 
 /**
+ * Return the sibling elements of each element in the collection, optionally filtered by a selector.
+ *
+ * @param {String} [selector] Filter
+ * @return {Object} New wrapped collection
+ * @chainable
+ * @example
+ *     $('.selector').siblings();
+ *     $('.selector').siblings('.filter');
+ */
+
+function siblings(selector) {
+    var nodes = [];
+    each(this, function(element) {
+        each(element.parentNode.children, function(sibling) {
+            if (sibling !== element && (!selector || (selector && matches(sibling, selector)))) {
+                nodes.push(sibling);
+            }
+        });
+    });
+    return $(nodes);
+}
+
+/**
  * Create a new, sliced collection.
  *
  * @param {Number} start
@@ -124,7 +127,7 @@ function parent(selector) {
  * @return {Object} New wrapped collection
  * @example
  *     $('.items').slice(1, 3)
- *     ➤ New wrapped collection containing the second, third, and fourth element.
+ *     // New wrapped collection containing the second, third, and fourth element.
  */
 
 function slice(start, end) {
@@ -135,4 +138,4 @@ function slice(start, end) {
  * Export interface
  */
 
-export { children, contents, closest, eq, get, parent, slice };
+export { children, contents, eq, get, parent, siblings, slice };

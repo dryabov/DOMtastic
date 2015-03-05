@@ -9,10 +9,10 @@
  * @return {boolean} 
  * @example
  *     $.isFunction(function(){});
- *     ➤ true
+ *     // true
  * @example
  *     $.isFunction({});
- *     ➤ false
+ *     // false
  */
 
 function isFunction(obj) {
@@ -26,10 +26,10 @@ function isFunction(obj) {
  * @return {boolean} 
  * @example
  *     $.isArray([]);
- *     ➤ true
+ *     // true
  * @example
  *     $.isArray({});
- *     ➤ false
+ *     // false
  */
 
 var isArray = Array.isArray;
@@ -38,4 +38,4 @@ var isArray = Array.isArray;
  * Export interface
  */
 
-export { isFunction, isArray };
+export { isArray, isFunction };

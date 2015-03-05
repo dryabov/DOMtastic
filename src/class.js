@@ -2,56 +2,59 @@
  * @module Class
  */
 
-import { makeIterable, each } from './util';
+import { each } from './util';
 
 /**
  * Add a class to the element(s)
  *
- * @param {String} value The class name to add to the element(s).
+ * @param {String} value Space-separated class name(s) to add to the element(s).
  * @return {Object} The wrapped collection
  * @chainable
  * @example
  *     $('.item').addClass('bar');
+ *     $('.item').addClass('bar foo');
  */
 
 function addClass(value) {
-    each(this, function(element) {
-        element.classList.add(value);
-    });
+    if(value && value.length) {
+        each(value.split(' '), _each.bind(this, 'add'));
+    }
     return this;
 }
 
 /**
  * Remove a class from the element(s)
  *
- * @param {String} value The class name to remove from the element(s).
+ * @param {String} value Space-separated class name(s) to remove from the element(s).
  * @return {Object} The wrapped collection
  * @chainable
  * @example
  *     $('.items').removeClass('bar');
+ *     $('.items').removeClass('bar foo');
  */
 
 function removeClass(value) {
-    each(this, function(element) {
-        element.classList.remove(value);
-    });
+    if(value && value.length) {
+        each(value.split(' '), _each.bind(this, 'remove'));
+    }
     return this;
 }
 
 /**
  * Toggle a class at the element(s)
  *
- * @param {String} value The class name to toggle at the element(s).
+ * @param {String} value Space-separated class name(s) to toggle at the element(s).
  * @return {Object} The wrapped collection
  * @chainable
  * @example
  *     $('.item').toggleClass('bar');
+ *     $('.item').toggleClass('bar foo');
  */
 
 function toggleClass(value) {
-    each(this, function(element) {
-        element.classList.toggle(value);
-    });
+    if(value && value.length) {
+        each(value.split(' '), _each.bind(this, 'toggle'));
+    }
     return this;
 }
 
@@ -66,8 +69,22 @@ function toggleClass(value) {
  */
 
 function hasClass(value) {
-    return makeIterable(this).some(function(element) {
+    return (this.nodeType ? [this] : this).some(function(element) {
         return element.classList.contains(value);
+    });
+}
+
+/**
+ * Specialized iteration, applying `fn` of the classList API to each element.
+ *
+ * @param {String} fnName
+ * @param {String} className
+ * @private
+ */
+
+function _each(fnName, className) {
+    each(this, function(element) {
+        element.classList[fnName](className);
     });
 }
 

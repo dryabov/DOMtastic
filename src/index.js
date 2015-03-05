@@ -1,20 +1,51 @@
 /**
- * # DOMtastic
- *
- * Small & fast DOM and event library for modern browsers.
- * Having the same familiar API as jQuery (but without the extra "weight" of modules like `$.ajax`, `$.animate`,
- * and `$.Deferred`), it works great stand-alone or paired up with e.g. Backbone.
- * The full version is only 7KB minified (2KB gzip), but it's easy to create a custom build to exclude parts you don't need.
- *
- * The [source](https://github.com/webpro/DOMtastic) is written in the ES6 Modules format,
- * and transpiled to an AMD and a CommonJS version using [Traceur](https://github.com/google/traceur-compiler).
- * And last but also least, the CommonJS version is "browserified".
- *
- * Please find the table of contents in upper right.
- *
- * @module main
+ * @module API
  */
 
-import $ from './api';
+import { extend } from './util';
+
+var api = {},
+    $ = {};
+
+// Import modules to build up the API
+
+import * as array from './array';
+import * as attr from './attr';
+import * as class_ from './class';
+import * as contains from './contains';
+import * as css from './css';
+import * as data from './data';
+import * as dom from './dom';
+import * as dom_extra from './dom_extra';
+import * as event from './event';
+import * as html from './html';
+import * as noconflict from './noconflict';
+import * as ready from './ready';
+import * as selector from './selector';
+import * as selector_extra from './selector_extra';
+import * as trigger from './trigger';
+import * as type from './type';
+
+if (typeof selector !== 'undefined') {
+    $ = selector.$;
+    $.matches = selector.matches;
+    api.find = selector.find;
+    api.closest = selector.closest;
+}
+
+extend($, contains, noconflict, type);
+extend(api, array, attr, class_, css, data, dom, dom_extra, event, html, ready, selector_extra, trigger);
+
+$.fn = api;
+
+// Version
+
+$.version = '__VERSION__';
+
+// Util
+
+$.extend = extend;
+
+// Export interface
 
 export default $;

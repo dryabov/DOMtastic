@@ -3,6 +3,7 @@
  */
 
 import { toArray } from './util';
+import { $ } from './selector';
 
 /**
  * Append element(s) to each element in the collection.
@@ -28,11 +29,7 @@ function append(element) {
             }
         }
     } else {
-        var l = this.length;
-        while (l--) {
-            var elm = l === 0 ? element : _clone(element);
-            append.call(this[l], elm);
-        }
+        _each(this, append, element);
     }
     return this;
 }
@@ -61,11 +58,7 @@ function prepend(element) {
             }
         }
     } else {
-        var l = this.length;
-        while (l--) {
-            var elm = l === 0 ? element : _clone(element);
-            prepend.call(this[l], elm);
-        }
+        _each(this, prepend, element);
     }
     return this;
 }
@@ -94,11 +87,7 @@ function before(element) {
             }
         }
     } else {
-        var l = this.length;
-        while (l--) {
-            var elm = l === 0 ? element : _clone(element);
-            before.call(this[l], elm);
-        }
+        _each(this, before, element);
     }
     return this;
 }
@@ -126,11 +115,7 @@ function after(element) {
             }
         }
     } else {
-        var l = this.length;
-        while (l--) {
-            var elm = l === 0 ? element : _clone(element);
-            after.call(this[l], elm);
-        }
+        _each(this, after, element);
     }
     return this;
 }
@@ -166,6 +151,23 @@ function _clone(element) {
         });
     }
     return element;
+}
+
+/**
+ * Specialized iteration, applying `fn` in reversed manner to a clone of each element, but the provided one.
+ *
+ * @param {NodeList|Array} collection
+ * @param {Function} fn
+ * @param {Node} element
+ * @private
+ */
+
+function _each(collection, fn, element) {
+    var l = collection.length;
+    while (l--) {
+        var elm = l === 0 ? element : _clone(element);
+        fn.call(collection[l], elm);
+    }
 }
 
 /*

@@ -2,10 +2,9 @@
  * @module Selector
  */
 
-import { global, makeIterable } from './util';
+import { global, each, uniq } from './util';
 
-var slice = [].slice,
-    isPrototypeSet = false,
+var isPrototypeSet = false,
     reFragment = /^\s*<(\w+|!)[^>]*>/,
     reSingleTag = /^<(\w+)\s*\/?>(?:<\/\1>|)$/,
     reSimpleSelector = /^[\.#]?[\w-]*$/;
@@ -41,7 +40,7 @@ function $(selector, context = document) {
 
     } else if (typeof selector !== 'string') {
 
-        collection = makeIterable(selector);
+        collection = selector.nodeType || selector === window ? [selector] : selector;
 
     } else if (reFragment.test(selector)) {
 
@@ -55,12 +54,12 @@ function $(selector, context = document) {
 
     }
 
-    return $.isNative ? collection : wrap(collection);
+    return wrap(collection);
 
 }
 
 /*
- * Chaining for the `$` wrapper (aliasing `find` for `$`).
+ * Find descendants matching the provided `selector` for each element in the collection.
  *
  * @param {String|Node|NodeList|Array} selector Query selector, `Node`, `NodeList`, array of elements, or HTML fragment string.
  * @return {Object} The wrapped collection
@@ -69,8 +68,59 @@ function $(selector, context = document) {
  */
 
 function find(selector) {
-    return $(selector, this);
+    var nodes = [];
+    each(this, function(node) {
+        each(querySelector(selector, node), function(child) {
+            if(nodes.indexOf(child) === -1) {
+                nodes.push(child);
+            }
+        });
+    });
+    return $(nodes);
 }
+
+/**
+ * Return the closest element matching the selector (starting by itself) for each element in the collection.
+ *
+ * @param {String} selector Filter
+ * @param {Object} [context] If provided, matching elements must be a descendant of this element
+ * @return {Object} New wrapped collection (containing zero or one element)
+ * @chainable
+ * @example
+ *     $('.selector').closest('.container');
+ */
+
+var closest = (function() {
+
+    function closest(selector, context) {
+        var nodes = [];
+        each(this, function(node) {
+            while (node && node !== context) {
+                if (matches(node, selector)) {
+                    nodes.push(node);
+                    break;
+                }
+                node = node.parentElement;
+            }
+        });
+        return $(uniq(nodes));
+    }
+
+    return !Element.prototype.closest ? closest : function(selector, context) {
+        if(!context) {
+            var nodes = [];
+            each(this, function(node) {
+                var n = node.closest(selector);
+                if(n) {
+                    nodes.push(n);
+                }
+            });
+            return $(uniq(nodes));
+        } else {
+            return closest.call(this, selector, context)
+        }
+    }
+})();
 
 /*
  * Returns `true` if the element would be selected by the specified selector string; otherwise, returns `false`.
@@ -85,7 +135,7 @@ function find(selector) {
 
 var matches = (function() {
     var context = typeof Element !== 'undefined' ? Element.prototype : global,
-        _matches = context.matches || context.matchesSelector || context.mozMatchesSelector || context.webkitMatchesSelector || context.msMatchesSelector || context.oMatchesSelector;
+        _matches = context.matches || context.matchesSelector || context.mozMatchesSelector || context.msMatchesSelector || context.oMatchesSelector || context.webkitMatchesSelector;
     return function(element, selector) {
         return _matches.call(element, selector);
     };
@@ -104,7 +154,7 @@ function querySelector(selector, context) {
 
     var isSimpleSelector = reSimpleSelector.test(selector);
 
-    if (isSimpleSelector && !$.isNative) {
+    if (isSimpleSelector) {
         if (selector[0] === '#') {
             var element = (context.getElementById ? context : document).getElementById(selector.slice(1));
             return element ? [element] : [];
@@ -185,4 +235,4 @@ function Wrapper(collection) {
  * Export interface
  */
 
-export { $, find, matches };
+export { $, find, closest, matches };

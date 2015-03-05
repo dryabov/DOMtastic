@@ -1,4 +1,4 @@
-!$.isNative && describe('selectors (extra)', function() {
+describe('selectors (extra)', function() {
 
     describe('children', function() {
 
@@ -6,7 +6,7 @@
             var actual = $('#testFragment ul').children(),
                 expected = $('#testFragment li');
             expect(actual).to.have.length(5);
-            expect(actual).to.eql(expected);
+            expect(actual).to.have.same.elements(expected);
         });
 
         it('should return only elements', function() {
@@ -25,32 +25,7 @@
             var actual = $('#testFragment ul').children('[class]'),
                 expected = $('#testFragment li[class]');
             expect(actual).to.have.length(3);
-            expect(actual).to.eql(expected);
-        });
-
-    });
-
-    describe('closest', function() {
-
-        it('should return closest matching element (self)', function() {
-            var actual = $('#testFragment li.two').closest('.two'),
-                expected = $('#testFragment li.two');
-            expect(actual).to.have.length(1);
-            expect(actual).to.eql(expected);
-        });
-
-        it('should return closest matching element', function() {
-            var actual = $('#testFragment li.two').closest('ul'),
-                expected = $('#testFragment ul');
-            expect(actual).to.have.length(1);
-            expect(actual).to.eql(expected);
-        });
-
-        it('should return empty collection when there are no matches', function() {
-            var actual = $('#testFragment').closest('.foo'),
-                expected = $('.foo');
-            expect(actual).to.have.length(0);
-            expect(actual).to.eql(expected);
+            expect(actual).to.have.same.elements(expected);
         });
 
     });
@@ -115,21 +90,46 @@
             var actual = $('#testFragment ul').parent(),
                 expected = $('#testFragment');
             expect(actual).to.have.length(1);
-            expect(actual).to.eql(expected);
+            expect(actual).to.have.same.elements(expected);
         });
 
         it('should return direct parents', function() {
             var actual = $('#testFragment li span').parent(),
                 expected = $('#testFragment li');
             expect(actual).to.have.length(5);
-            expect(actual[0]).to.equal(expected[0]);
+            expect(actual).to.have.same.elements(expected);
         });
 
         it('should return filtered parents', function() {
             var actual = $('#testFragment li span').parent('[class]'),
                 expected = $('#testFragment li[class]');
             expect(actual).to.have.length(3);
-            expect(actual).to.eql(expected);
+            expect(actual).to.have.same.elements(expected);
+        });
+
+    });
+
+    describe('siblings', function() {
+
+        it('should return siblings', function() {
+            var actual = $('#testFragment .fourth').siblings(),
+                expected = $('#testFragment li').filter(':not(.fourth)');
+            expect(actual).to.have.length(4);
+            expect(actual).to.have.same.elements(expected);
+        });
+
+        it('should return filtered siblings', function() {
+            var actual = $('#testFragment .fourth').siblings('[class]'),
+                expected = $('#testFragment li[class]').filter(':not(.fourth)');
+            expect(actual).to.have.length(2);
+            expect(actual).to.have.same.elements(expected);
+        });
+
+        it('should return no siblings', function() {
+            var actual = $('#testFragment .fourth').siblings('.nothing'),
+                expected = $('#testFragment li').filter('.nothing');
+            expect(actual).to.have.length(0);
+            expect(actual).to.have.same.elements(expected);
         });
 
     });
@@ -140,8 +140,8 @@
             var expected = $('#testFragment li'),
                 actual = $('#testFragment li').slice(-3, -1);
             expect(actual).to.have.length(2);
-            expect(actual[0]).to.be.equal(expected[2]);
-            expect(actual[1]).to.be.equal(expected[3]);
+            expect(actual[0]).to.equal(expected[2]);
+            expect(actual[1]).to.equal(expected[3]);
         });
 
     });

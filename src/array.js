@@ -2,7 +2,7 @@
  * @module Array
  */
 
-import { each as _each } from './util';
+import { each as _each, toArray } from './util';
 import { $, matches } from './selector';
 
 var ArrayProto = Array.prototype;
@@ -17,7 +17,7 @@ var ArrayProto = Array.prototype;
  *     $('.items').every(function(element) {
  *         return element.hasAttribute('active')
  *     });
- *     ➤ true/false
+ *     // true/false
  */
 
 var every = ArrayProto.every;
@@ -70,7 +70,7 @@ var each = forEach;
  * @return {Number} The zero-based index, -1 if not found.
  * @example
  *     $('.items').indexOf(element);
- *     ➤ 2
+ *     // 2
  */
 
 var indexOf = ArrayProto.indexOf;
@@ -85,7 +85,7 @@ var indexOf = ArrayProto.indexOf;
  *     $('.items').map(function(element) {
  *         return element.getAttribute('name')
  *     });
- *     ➤ ['ever', 'green']
+ *     // ['ever', 'green']
  */
 
 var map = ArrayProto.map;
@@ -112,6 +112,36 @@ var pop = ArrayProto.pop;
 var push = ArrayProto.push;
 
 /**
+ * Apply a function against each element in the collection, and this accumulator function has to reduce it
+ * to a single value.
+ *
+ * @param {Function} callback Function to execute on each value in the array, taking four arguments (see example).
+ * @param {Mixed} initialValue Object to use as the first argument to the first call of the callback.
+ * @example
+ *     $('.items').reduce(function(previousValue, element, index, collection) {
+ *         return previousValue + element.clientHeight;
+ *     }, 0);
+ *     // [total height of elements]
+ */
+
+var reduce = ArrayProto.reduce;
+
+/**
+ * Apply a function against each element in the collection (from right-to-left), and this accumulator function has
+ * to reduce it to a single value.
+ *
+ * @param {Function} callback Function to execute on each value in the array, taking four arguments (see example).
+ * @param {Mixed} initialValue Object to use as the first argument to the first call of the callback.
+ * @example
+ *     $('.items').reduceRight(function(previousValue, element, index, collection) {
+ *         return previousValue + element.textContent;
+ *     }, '')
+ *     // [reversed text of elements]
+ */
+
+var reduceRight = ArrayProto.reduceRight;
+
+/**
  * Reverses an array in place. The first array element becomes the last and the last becomes the first.
  *
  * @return {Object} The wrapped collection, reversed
@@ -121,8 +151,7 @@ var push = ArrayProto.push;
  */
 
 function reverse() {
-    var elements = ArrayProto.slice.call(this);
-    return $(ArrayProto.reverse.call(elements));
+    return $(toArray(this).reverse());
 }
 
 /**
@@ -144,7 +173,7 @@ var shift = ArrayProto.shift;
  *     $('.items').some(function(element) {
  *         return element.hasAttribute('active')
  *     });
- *     ➤ true/false
+ *     // true/false
  */
 
 var some = ArrayProto.some;
@@ -164,4 +193,4 @@ var unshift = ArrayProto.unshift;
  * Export interface
  */
 
-export { each, every, filter, forEach, indexOf, map, pop, push, reverse, shift, some, unshift };
+export { each, every, filter, forEach, indexOf, map, pop, push, reduce, reduceRight, reverse, shift, some, unshift };
