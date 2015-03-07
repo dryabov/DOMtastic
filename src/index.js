@@ -25,6 +25,8 @@ import * as selector from './selector';
 import * as selector_extra from './selector_extra';
 import * as trigger from './trigger';
 import * as type from './type';
+import * as jquery_compat from './jquery_compat';
+import * as jquery_compat_fn from './jquery_compat_fn';
 
 if (typeof selector !== 'undefined') {
     $ = selector.$;
@@ -33,8 +35,8 @@ if (typeof selector !== 'undefined') {
     api.closest = selector.closest;
 }
 
-extend($, contains, noconflict, type);
-extend(api, array, attr, class_, css, data, dom, dom_extra, event, html, ready, selector_extra, trigger);
+extend($, contains, noconflict, type, jquery_compat);
+extend(api, array, attr, class_, css, data, dom, dom_extra, event, html, ready, selector_extra, trigger, jquery_compat_fn);
 
 $.fn = api;
 
