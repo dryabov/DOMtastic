@@ -10,31 +10,31 @@ var api = {},
 // Import modules to build up the API
 
 import * as array from './array';
-import * as attr from './attr';
-import * as class_ from './class';
-import * as contains from './contains';
+import * as attr from './dom/attr';
+import * as class_ from './dom/class';
+import * as contains from './dom/contains';
 import * as css from './css';
-import * as data from './data';
-import * as dom from './dom';
-import * as dom_extra from './dom_extra';
-import * as event from './event';
-import * as html from './html';
+import * as data from './dom/data';
+import * as dom from './dom/index';
+import * as dom_extra from './dom/extra';
+import * as event from './event/index';
+import * as html from './dom/html';
 import * as noconflict from './noconflict';
-import * as ready from './ready';
-import * as selector from './selector';
-import * as selector_extra from './selector_extra';
-import * as trigger from './trigger';
+import * as ready from './event/ready';
+import * as selector from './selector/index';
+import * as closest from './selector/closest';
+import * as selector_extra from './selector/extra';
+import * as trigger from './event/trigger';
 import * as type from './type';
 
 if (typeof selector !== 'undefined') {
     $ = selector.$;
     $.matches = selector.matches;
     api.find = selector.find;
-    api.closest = selector.closest;
 }
 
 extend($, contains, noconflict, type);
-extend(api, array, attr, class_, css, data, dom, dom_extra, event, html, ready, selector_extra, trigger);
+extend(api, array, attr, class_, closest, css, data, dom, dom_extra, event, html, ready, selector_extra, trigger);
 
 $.fn = api;
 

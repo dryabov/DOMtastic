@@ -4,12 +4,13 @@ var fs = require('fs'),
     path = require('path'),
     util = require('util'),
     mkdirp = require('mkdirp'),
+    glob = require('glob'),
     minimist = require('minimist'),
     Transform = require('stream').Transform,
-    browserify = require('browserify'),
-    to5Browserify = require('6to5ify');
+    browserify = require('browserify');
 
-var basedir = 'src',
+var pkg = require('../package.json'),
+    basedir = 'src',
     entry = path.resolve(basedir, 'index.js'),
     outDir = path.resolve('dist'),
     outFile = path.resolve(outDir, 'domtastic.js');
@@ -17,6 +18,7 @@ var basedir = 'src',
 var argv = minimist(process.argv.slice(2)),
     exclude = argv.exclude ? argv.exclude.split(',') : [],
     include = argv.include ? argv.include.split(',') : [],
+    jQueryCompat = argv['jquery-compat'],
     base = ['index', 'util'];
 
 util.inherits(ModuleExcluder, Transform);
@@ -38,13 +40,23 @@ function bundle(excludes, includes) {
 
     var excluder = new ModuleExcluder(excludes),
         customFile = fs.createReadStream(entry).pipe(excluder),
+        redirectifyOptions = jQueryCompat ? {
+            dir: '../src-jquery-compat',
+            base: path.resolve(basedir)
+        } : {},
         writer = fs.createWriteStream(outFile);
 
     browserify(customFile, {
-            standalone: 'domtastic',
+            standalone: '$',
             basedir: basedir
         })
-        .transform(to5Browserify)
+        .transform('redirectify', redirectifyOptions)
+        .transform('babelify')
+        .transform('browserify-versionify', {
+            placeholder: '__VERSION__',
+            version: pkg.version
+        })
+        .plugin('bundle-collapser/plugin')
         .bundle()
         .pipe(writer);
 
@@ -58,15 +70,15 @@ function bundle(excludes, includes) {
 
 mkdirp(outDir, function(err) {
     if (err) throw err;
-    fs.readdir(basedir, function(err, modules) {
+    glob('**/*.js', {cwd: basedir}, function(err, modules) {
         var all = modules.map(function(module) {
             return module.replace(/\.js$/, '');
         });
         include = include.length ? base.concat(include) : all.filter(function(module) {
-            return exclude.indexOf(module) === -1;
+            return exclude.indexOf(module) === -1 && exclude.indexOf(module + '/index') === -1;
         });
         exclude = exclude.length ? exclude : all.filter(function(module) {
-            return include.indexOf(module) === -1;
+            return include.indexOf(module) === -1 && include.indexOf(module + '/index') === -1;
         });
         bundle(exclude, include);
     });

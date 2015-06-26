@@ -4,14 +4,14 @@
 * Same familiar API as jQuery (but without the extra "weight" of modules like `$.ajax`, `$.animate`, and `$.Deferred`).
 * Weighs in at only 3 to 14KB (minified), depending on included modules. Full bundle is under 5KB gzipped.
 * Works great stand-alone or paired up with e.g. Backbone or Angular.
-* The [source](https://github.com/webpro/DOMtastic) is written in ES6 format, and transpiled to AMD and CommonJS with [6to5](https://6to5.github.io/).
+* The [source](https://github.com/webpro/DOMtastic) is written in ES6 format, and transpiled to AMD and CommonJS with [babel](https://babeljs.io).
 * Browserify is used to create a [UMD](https://github.com/umdjs/umd) bundle (supporting AMD, CommonJS, and fallback to browser global).
 * Easy to create a [custom build](#custom-build) to include or exclude parts.
 * DOMtastic also serves as a starting point for your own application-specific DOM API ([read more](#build-a-custom-api-for-your-application)).
 
 ## Quicklinks
 
-* Bundled sources: [domtastic.js](https://cdn.jsdelivr.net/domtastic/0.9/domtastic.js), [domtastic.min.js](https://cdn.jsdelivr.net/domtastic/0.9/domtastic.min.js)
+* Bundled sources: [domtastic.js](https://cdn.jsdelivr.net/domtastic/0.10/domtastic.js), [domtastic.min.js](https://cdn.jsdelivr.net/domtastic/0.10/domtastic.min.js)
 * [API documentation](http://webpro.github.io/DOMtastic/doc/)
 * [Run tests](http://webpro.github.io/DOMtastic/test/)
 * Coverage: [Istanbul](http://webpro.github.io/DOMtastic/coverage/dist/domtastic.js.html), [Coveralls](https://coveralls.io/r/webpro/DOMtastic)
@@ -60,7 +60,7 @@ require(['domtastic'], function($) {
 ### Browser Global
 
 ```html
-<script src="//cdn.jsdelivr.net/domtastic/0.9/domtastic.min.js"></script>
+<script src="//cdn.jsdelivr.net/domtastic/0.10/domtastic.min.js"></script>
 ```
 
 ```javascript
@@ -85,30 +85,9 @@ $('.planet').addClass('evergreen').on('sunrise', '.grass', grow);
     some
     unshift
 
-### [Attr](http://webpro.github.io/DOMtastic/doc#attr)
-
-    attr
-    removeAttr
-
-### [Class](http://webpro.github.io/DOMtastic/doc#class)
-
-    addClass
-    hasClass
-    removeClass
-    toggleClass
-
-### [Contains](http://webpro.github.io/DOMtastic/doc#contains)
-
-    contains
-
 ### [CSS](http://webpro.github.io/DOMtastic/doc#css)
 
     css
-
-### [Data](http://webpro.github.io/DOMtastic/doc#data)
-
-    data
-    prop
 
 ### [DOM](http://webpro.github.io/DOMtastic/doc#dom)
 
@@ -118,7 +97,28 @@ $('.planet').addClass('evergreen').on('sunrise', '.grass', grow);
     clone
     prepend
 
-### [DOM (extra)](http://webpro.github.io/DOMtastic/doc#dom_extra)
+### [DOM/attr](http://webpro.github.io/DOMtastic/doc#dom/attr)
+
+    attr
+    removeAttr
+
+### [DOM/class](http://webpro.github.io/DOMtastic/doc#dom/class)
+
+    addClass
+    hasClass
+    removeClass
+    toggleClass
+
+### [DOM/contains](http://webpro.github.io/DOMtastic/doc#dom/contains)
+
+    contains
+
+### [DOM/data](http://webpro.github.io/DOMtastic/doc#dom/data)
+
+    data
+    prop
+
+### [DOM/extra](http://webpro.github.io/DOMtastic/doc#dom/extra)
 
     appendTo
     empty
@@ -127,33 +127,39 @@ $('.planet').addClass('evergreen').on('sunrise', '.grass', grow);
     text
     val
 
+### [DOM/html](http://webpro.github.io/DOMtastic/doc#dom/html)
+
+    html
+
 ### [Event](http://webpro.github.io/DOMtastic/doc#event)
 
     on (alias: bind)
     off (alias: unbind)
+
+### [Event/ready](http://webpro.github.io/DOMtastic/doc#event/ready)
+
+    ready
+
+### [Event/trigger](http://webpro.github.io/DOMtastic/doc#event/trigger)
+
     trigger
     triggerHandler
-
-### [HTML](http://webpro.github.io/DOMtastic/doc#html)
-
-    html
 
 ### [NoConflict](http://webpro.github.io/DOMtastic/doc#noconflict)
 
     noConflict
 
-### [Ready](http://webpro.github.io/DOMtastic/doc#ready)
-
-    ready
-
 ### [Selector](http://webpro.github.io/DOMtastic/doc#selector)
 
     $
-    closest
     find
     matches
 
-### [Selector (extra)](http://webpro.github.io/DOMtastic/doc#selector_extra)
+### [Selector/closest](http://webpro.github.io/DOMtastic/doc#selector/closest)
+
+    closest
+
+### [Selector/extra](http://webpro.github.io/DOMtastic/doc#selector/extra)
 
     children
     contents
@@ -162,11 +168,6 @@ $('.planet').addClass('evergreen').on('sunrise', '.grass', grow);
     parent
     siblings
     slice
-
-### [Trigger](http://webpro.github.io/DOMtastic/doc#trigger)
-
-    trigger
-    triggerHandler
 
 ### [Type](http://webpro.github.io/DOMtastic/doc#type)
 
@@ -213,6 +214,14 @@ bin/custom --include=selector,class
 ```
 
 Find the output in the `dist/` folder.
+
+### jQuery Compatibility
+
+Some iterator method signatures in jQuery are different (i.e. non-standard), most notably the `index` before `element` argument in `each`, `filter` and `map`). However, a custom build that is compatible with jQuery can be created by using the `--jquery-compat` flag:
+
+```bash
+bin/custom --jquery-compat
+```
 
 ### Build a custom API for your application
 
